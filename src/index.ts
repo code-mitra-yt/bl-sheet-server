@@ -32,6 +32,10 @@ const startServer = async () => {
 
 void startServer()
 
+app.get('/', (_, res) => {
+  res.send('Hello From Quiz!')
+})
+
 app.use(express.json())
 app.use(express.static('public'))
 
