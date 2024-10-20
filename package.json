@@ -1,0 +1,29 @@
+{
+  "name": "quiz-backend",
+  "version": "1.0.0",
+  "description": "quiz backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx tsx api/index.ts",
+    "dev": "nodemon api/index.ts",
+    "build": "tsc",
+    "vercel-build": "echo hello",
+    "format:check": "prettier . --check",
+    "format:write": "prettier . --write"
+  },
+  "keywords": [
+    "quiz"
+  ],
+  "author": "Rushi Mungse <codemitrayt@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.7.7",
+    "prettier": "3.3.3",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1"
+  }
+}
