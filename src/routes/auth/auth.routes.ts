@@ -10,6 +10,8 @@ import {
   userLoginValidator,
   verifyEmailAndCreatePassowordValidator,
   userRegisterValidator,
+  userEmailValidator,
+  tokenValidator,
 } from '../../validators/auth/user.validators'
 
 const authRoutes = express.Router()
@@ -44,6 +46,29 @@ authRoutes.post(
   userLoginValidator,
   validate,
   asyncHandler((req, res, next) => authController.login(req, res, next))
+)
+
+authRoutes.post(
+  '/forgotPassword',
+  userEmailValidator,
+  validate,
+  asyncHandler((req, res, next) =>
+    authController.forgotPassword(req, res, next)
+  )
+)
+
+authRoutes.post(
+  '/resetPassword',
+  verifyEmailAndCreatePassowordValidator,
+  validate,
+  asyncHandler((req, res, next) => authController.resetPassword(req, res, next))
+)
+
+authRoutes.post(
+  '/self',
+  tokenValidator,
+  validate,
+  asyncHandler((req, res, next) => authController.self(req, res, next))
 )
 
 export default authRoutes

@@ -1,3 +1,5 @@
+import MSG from './msg'
+import URLS from './urls'
 import {
   PricingModel,
   UserLoginType,
@@ -17,3 +19,5 @@ export const AvailableInvitationStatus: string[] =
   Object.values(InvitationStatus)
 export const AvailableDocStatus: string[] = Object.values(DocStatus)
 export const AvailableAccessType: string[] = Object.values(DocAccessType)
+
+export { URLS, MSG }

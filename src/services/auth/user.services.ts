@@ -15,6 +15,10 @@ class UserService {
   createUser(user: { email: string; password: string; fullName: string }) {
     return this.userModel.create(user)
   }
+
+  updateUser(userId: string, updatedUser: Partial<User>) {
+    return this.userModel.findByIdAndUpdate(userId, updatedUser, { new: true })
+  }
 }
 
 export default UserService

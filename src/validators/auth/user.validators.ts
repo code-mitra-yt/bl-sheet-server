@@ -45,8 +45,23 @@ const userLoginValidator = [
     .withMessage('Email is invalid'),
 ]
 
+const userEmailValidator = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Email is invalid'),
+]
+
+const tokenValidator = [
+  body('token').trim().notEmpty().withMessage('Token is required'),
+]
+
 export {
   userRegisterValidator,
   verifyEmailAndCreatePassowordValidator,
   userLoginValidator,
+  userEmailValidator,
+  tokenValidator,
 }

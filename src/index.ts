@@ -3,7 +3,7 @@ import express, { NextFunction, Request, Response } from 'express'
 
 import { ENV } from './config'
 import { connectDB } from './db'
-import { MSG } from './constants/msg'
+import { MSG } from './constants'
 import { errorHandler } from './middlewares'
 import { logger, morganMiddleware } from './logger'
 import { ApiResponse, asyncHandler } from './utils'

@@ -2,8 +2,7 @@ import { NextFunction, Response } from 'express'
 import { Logger } from 'winston'
 
 import { ENV } from '../../config'
-import URLS from '../../constants/urls'
-import { MSG } from '../../constants/msg'
+import { MSG, URLS } from '../../constants'
 import { ApiError, ApiResponse } from '../../utils'
 import { HashService, TokenService, UserService } from '../../services'
 
@@ -145,10 +144,139 @@ class AuthController {
             _id: user._id,
             email: user.email,
             fullName: user.fullName,
+            avatar: user.avatar,
             token: accessToken,
           },
         },
         'User logged in successfully.'
+      )
+    )
+  }
+
+  async forgotPassword(
+    req: CustomRequest<{ email: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { email } = req.body
+    this.logger.info({ msg: MSG.AUTH.FORGOT_PASSWORD, data: { email } })
+
+    const user = await this.userService.getUserByEmail(email)
+    if (!user) throw new ApiError(409, 'User with email not exists.')
+
+    const EXP = '2 days'
+    const resetPasswordToken = await this.tokenService.signToken(
+      { user: { email: user.email, fullName: user.fullName, _id: user._id } },
+      EXP
+    )
+
+    const resetPasswordLink = `${ENV.FRONTEND_URL!}${
+      URLS.resetPasswordUrl
+    }?token=${resetPasswordToken}`
+
+    //TODO: Send notification to user email
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { email: user.email, resetPasswordLink },
+          'Reset password link has been sent to your email'
+        )
+      )
+  }
+
+  async resetPassword(
+    req: CustomRequest<VerifyEmailAndCreatePasswordBody>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { password, token } = req.body
+
+    const decodedToken = this.tokenService.verifyToken(token)
+    if (
+      !decodedToken?.user ||
+      !decodedToken?.user?.email ||
+      !decodedToken?.user?.fullName
+    )
+      throw new ApiError(400, 'The token provided is invalid or expired.')
+
+    if ((decodedToken?.exp || 0) * 1000 < Date.now())
+      throw new ApiError(
+        400,
+        'We are sorry, but your token has expired. Please request a new token to proceed.'
+      )
+
+    const existedUser = await this.userService.getUserByEmail(
+      decodedToken?.user?.email
+    )
+    if (!existedUser) throw new ApiError(409, 'User with email not exists.', [])
+
+    this.logger.info({
+      msg: MSG.AUTH.RESET_PASSWORD,
+      data: { userId: existedUser._id, email: existedUser.email },
+    })
+
+    const hashedPassword = await this.hashService.hashData(password)
+    await this.userService.updateUser(existedUser._id, {
+      password: hashedPassword,
+    })
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          _id: existedUser._id,
+          email: existedUser.email,
+          fullName: existedUser.fullName,
+        },
+        'Your password has been reset successfully'
+      )
+    )
+  }
+
+  async self(
+    req: CustomRequest<{ token: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { token } = req.body
+
+    const decodedToken = this.tokenService.verifyToken(token)
+    if (
+      !decodedToken?.user ||
+      !decodedToken?.user?.email ||
+      !decodedToken?.user?.fullName
+    )
+      throw new ApiError(400, 'The token provided is invalid or expired.')
+
+    if ((decodedToken?.exp || 0) * 1000 < Date.now())
+      throw new ApiError(
+        400,
+        'We are sorry, but your token has expired. Please request a new token to proceed.'
+      )
+
+    const existedUser = await this.userService.getUserByEmail(
+      decodedToken?.user?.email
+    )
+    if (!existedUser) throw new ApiError(409, 'User with email not exists.', [])
+
+    this.logger.info({
+      msg: MSG.AUTH.SELF,
+      data: { userId: existedUser?._id, email: existedUser.email },
+    })
+
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          _id: existedUser._id,
+          email: existedUser.email,
+          fullName: existedUser.fullName,
+          avatar: existedUser.avatar,
+        },
+        'Fetched users details successfully'
       )
     )
   }
