@@ -10,5 +10,5 @@ export interface CustomRequest<T = null> extends Request {
 export type CustomModel<T> = T & Document
 
 export interface JwtPayloadType extends JwtPayload {
-  user: User
+  user: { _id?: string; fullName?: string; email?: string }
 }

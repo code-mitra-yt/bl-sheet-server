@@ -29,3 +29,9 @@ export interface User {
   loginType: UserLoginType
   pricingModel: PricingModel
 }
+
+export interface VerifyEmailAndCreatePasswordBody {
+  password: string
+  confirmPassword: string
+  token: string
+}

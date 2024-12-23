@@ -5,6 +5,7 @@ import {
   getLoggedInUserOrIgnore,
   avoidInProduction,
 } from './auth.middlewares'
+import { validate } from './validate.middlewares'
 
 export {
   errorHandler,
@@ -12,4 +13,5 @@ export {
   verifyPermission,
   getLoggedInUserOrIgnore,
   avoidInProduction,
+  validate,
 }
