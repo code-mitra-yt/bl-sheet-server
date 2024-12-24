@@ -12,7 +12,7 @@ export enum IssuePriority {
 }
 
 export interface Issue {
-  id: ObjectId
+  _id: ObjectId
   memberId: ObjectId
   projectId: ObjectId
   title: string
@@ -25,4 +25,5 @@ export interface Issue {
   closedDate: Date
   priority: IssuePriority
   closedBy: ObjectId
+  isDeleted: boolean
 }

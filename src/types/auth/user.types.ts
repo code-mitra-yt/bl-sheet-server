@@ -3,8 +3,8 @@ export interface Avatar {
 }
 
 export enum UserRoles {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
+  ADMIN = 'Admin',
+  USER = 'User',
 }
 
 export enum UserLoginType {
@@ -14,9 +14,9 @@ export enum UserLoginType {
 }
 
 export enum PricingModel {
-  FREE = 'free',
-  PREMIUM = 'premium',
-  ENTERPRISE = 'enterprise',
+  FREE = 'Free',
+  PREMIUM = 'Premium',
+  ENTERPRISE = 'Enterprise',
 }
 
 export interface User {

@@ -22,7 +22,7 @@ export const verifyJWT = asyncHandler(
         token,
         ENV.ACCESS_TOKEN_SECRET as string
       ) as JwtPayloadType
-      const user = await UserModel.findById(decodedToken?._id).select(
+      const user = await UserModel.findById(decodedToken?.user?._id).select(
         '-password'
       )
       if (!user) {

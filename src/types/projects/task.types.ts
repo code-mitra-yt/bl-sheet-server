@@ -14,7 +14,7 @@ export enum TaskPriority {
 }
 
 export interface Task {
-  id: ObjectId
+  _id: ObjectId
   memberId: ObjectId
   projectId: ObjectId
   title: string
@@ -31,4 +31,5 @@ export interface Task {
   subTasks: string[]
   taskType: string
   taskNumber: number
+  isDeleted: boolean
 }

@@ -13,10 +13,10 @@ export enum InvitationStatus {
 }
 
 export interface Member {
-  id: ObjectId
+  _id?: ObjectId
   userId: ObjectId
   projectId: ObjectId
   email: string
-  role: MemberRole
-  invitationStatus: InvitationStatus
+  role?: MemberRole
+  invitationStatus?: InvitationStatus
 }

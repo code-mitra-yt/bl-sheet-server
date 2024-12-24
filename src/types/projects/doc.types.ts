@@ -12,7 +12,7 @@ export enum DocAccessType {
 }
 
 export interface Doc {
-  id: ObjectId
+  _id: ObjectId
   projectId: ObjectId
   memberId: ObjectId
   title: string
@@ -23,4 +23,5 @@ export interface Doc {
   comments: ObjectId[]
   attachments: ObjectId[]
   tags: string[]
+  isDeleted: boolean
 }
