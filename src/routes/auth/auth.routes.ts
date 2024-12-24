@@ -5,7 +5,13 @@ import { UserModel } from '../../models'
 import { asyncHandler } from '../../utils'
 import { validate } from '../../middlewares'
 import { AuthController } from '../../controllers'
-import { HashService, TokenService, UserService } from '../../services'
+import {
+  HashService,
+  MailgenService,
+  NotificationService,
+  TokenService,
+  UserService,
+} from '../../services'
 import {
   userLoginValidator,
   verifyEmailAndCreatePassowordValidator,
@@ -18,10 +24,15 @@ const authRoutes = express.Router()
 const userService = new UserService(UserModel)
 const tokenService = new TokenService()
 const hashService = new HashService()
+const notificationService = new NotificationService()
+const mailgenService = new MailgenService()
+
 const authController = new AuthController(
   userService,
   tokenService,
   hashService,
+  notificationService,
+  mailgenService,
   logger
 )
 

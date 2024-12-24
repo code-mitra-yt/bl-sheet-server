@@ -12,3 +12,11 @@ export type CustomModel<T> = T & Document
 export interface JwtPayloadType extends JwtPayload {
   user: { _id?: string; fullName?: string; email?: string }
 }
+
+export interface NotificationMessage {
+  to: string
+  text: string
+  html?: string
+  subject?: string
+  from?: string
+}

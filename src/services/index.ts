@@ -2,6 +2,8 @@ import UserService from './auth/user.services'
 
 import TokenService from './shared/token.services'
 import HashService from './shared/hash.services'
+import NotificationService from './shared/notification.services'
+import MailgenService from './shared/mailgon.services'
 
 import ProjectService from './project/project.services'
 import TaskService from './project/task.services'
@@ -14,6 +16,8 @@ export {
   UserService,
   TokenService,
   HashService,
+  NotificationService,
+  MailgenService,
   ProjectService,
   TaskService,
   IssueService,

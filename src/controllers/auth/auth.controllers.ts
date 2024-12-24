@@ -4,7 +4,13 @@ import { Logger } from 'winston'
 import { ENV } from '../../config'
 import { MSG, URLS } from '../../constants'
 import { ApiError, ApiResponse } from '../../utils'
-import { HashService, TokenService, UserService } from '../../services'
+import {
+  HashService,
+  MailgenService,
+  NotificationService,
+  TokenService,
+  UserService,
+} from '../../services'
 
 import { CustomRequest } from '../../types/shared/shared.types'
 import {
@@ -17,6 +23,8 @@ class AuthController {
     private userService: UserService,
     private tokenService: TokenService,
     private hashService: HashService,
+    private notificationService: NotificationService,
+    private mailgenService: MailgenService,
     private logger: Logger
   ) {}
 
@@ -41,14 +49,24 @@ class AuthController {
       URLS.createPasswordUrl
     }?token=${verifyEmailToken}`
 
-    //TODO: Send notification for verification email
+    const { emailHTML, emailText } = this.mailgenService.verificationEmailHTML({
+      name: fullName,
+      link: verificationLink,
+    })
+
+    await this.notificationService.send({
+      to: email,
+      subject: 'Verify Email and Create Password',
+      text: emailText,
+      html: emailHTML,
+    })
 
     return res
       .status(200)
       .json(
         new ApiResponse(
           200,
-          { fullName, email, verificationLink },
+          { fullName, email },
           'The verification email has been sent successfully to the provided email address.'
         )
       )
@@ -110,8 +128,11 @@ class AuthController {
             _id: user._id,
             email: user.email,
             fullName: user.fullName,
-            token: accessToken,
+            avatar: user.avatar,
+            role: user.role,
+            pricingModel: user.pricingModel,
           },
+          token: accessToken,
         },
         'Your email has been successfully verified, and your password has been created.'
       )
@@ -145,8 +166,10 @@ class AuthController {
             email: user.email,
             fullName: user.fullName,
             avatar: user.avatar,
-            token: accessToken,
+            role: user.role,
+            pricingModel: user.pricingModel,
           },
+          token: accessToken,
         },
         'User logged in successfully.'
       )
@@ -174,7 +197,19 @@ class AuthController {
       URLS.resetPasswordUrl
     }?token=${resetPasswordToken}`
 
-    //TODO: Send notification to user email
+    const { emailHTML, emailText } = this.mailgenService.resetPasswordEmailHTML(
+      {
+        name: user.fullName,
+        link: resetPasswordLink,
+      }
+    )
+
+    await this.notificationService.send({
+      to: email,
+      subject: 'Reset Your BL Sheet Password',
+      text: emailText,
+      html: emailHTML,
+    })
 
     return res
       .status(200)
@@ -249,32 +284,37 @@ class AuthController {
       !decodedToken?.user?.email ||
       !decodedToken?.user?.fullName
     )
-      throw new ApiError(400, 'The token provided is invalid or expired.')
+      throw new ApiError(401, 'The token provided is invalid or expired.')
 
     if ((decodedToken?.exp || 0) * 1000 < Date.now())
       throw new ApiError(
-        400,
+        401,
         'We are sorry, but your token has expired. Please request a new token to proceed.'
       )
 
-    const existedUser = await this.userService.getUserByEmail(
+    const user = await this.userService.getUserByEmail(
       decodedToken?.user?.email
     )
-    if (!existedUser) throw new ApiError(409, 'User with email not exists.', [])
+    if (!user) throw new ApiError(409, 'User with email not exists.', [])
 
     this.logger.info({
       msg: MSG.AUTH.SELF,
-      data: { userId: existedUser?._id, email: existedUser.email },
+      data: { userId: user?._id, email: user.email },
     })
 
     return res.status(200).json(
       new ApiResponse(
         200,
         {
-          _id: existedUser._id,
-          email: existedUser.email,
-          fullName: existedUser.fullName,
-          avatar: existedUser.avatar,
+          user: {
+            _id: user._id,
+            email: user.email,
+            fullName: user.fullName,
+            avatar: user.avatar,
+            role: user.role,
+            pricingModel: user.pricingModel,
+          },
+          token,
         },
         'Fetched users details successfully'
       )
