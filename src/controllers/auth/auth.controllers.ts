@@ -216,7 +216,7 @@ class AuthController {
       .json(
         new ApiResponse(
           200,
-          { email: user.email, resetPasswordLink },
+          { email: user.email },
           'Reset password link has been sent to your email'
         )
       )
@@ -243,28 +243,42 @@ class AuthController {
         'We are sorry, but your token has expired. Please request a new token to proceed.'
       )
 
-    const existedUser = await this.userService.getUserByEmail(
+    const user = await this.userService.getUserByEmail(
       decodedToken?.user?.email
     )
-    if (!existedUser) throw new ApiError(409, 'User with email not exists.', [])
+    if (!user) throw new ApiError(409, 'User with email not exists.', [])
 
     this.logger.info({
       msg: MSG.AUTH.RESET_PASSWORD,
-      data: { userId: existedUser._id, email: existedUser.email },
+      data: { userId: user._id, email: user.email },
     })
 
     const hashedPassword = await this.hashService.hashData(password)
-    await this.userService.updateUser(existedUser._id, {
+    await this.userService.updateUser(user._id, {
       password: hashedPassword,
+    })
+
+    const accessToken = await this.tokenService.signToken({
+      user: {
+        _id: user._id,
+        email: user.email,
+        fullName: user.fullName,
+      },
     })
 
     return res.status(200).json(
       new ApiResponse(
         200,
         {
-          _id: existedUser._id,
-          email: existedUser.email,
-          fullName: existedUser.fullName,
+          user: {
+            _id: user._id,
+            email: user.email,
+            fullName: user.fullName,
+            avatar: user.avatar,
+            role: user.role,
+            pricingModel: user.pricingModel,
+          },
+          token: accessToken,
         },
         'Your password has been reset successfully'
       )
