@@ -3,7 +3,6 @@ import { body, query } from 'express-validator'
 const projectValidator = [
   body('name').trim().notEmpty().withMessage('Name is required'),
   body('description').trim().notEmpty().withMessage('Description is required'),
-  body('tags').isArray().isLength({ min: 1 }).withMessage('Tags is required'),
 ]
 
 const projectIdValidator = [
