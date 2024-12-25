@@ -4,7 +4,12 @@ import { logger } from '../../logger'
 import { asyncHandler } from '../../utils'
 import { ProjectController } from '../../controllers'
 import { validate, verifyJWT } from '../../middlewares'
-import { MemberModel, ProjectModel, UserModel } from '../../models'
+import {
+  MemberModel,
+  ProjectModel,
+  UserModel,
+  MemberModelType,
+} from '../../models'
 import {
   projectIdQueryValidator,
   projectIdValidator,
@@ -15,7 +20,9 @@ import { MemberService, ProjectService, UserService } from '../../services'
 const projectRoutes = express.Router()
 const userService = new UserService(UserModel)
 const projectService = new ProjectService(ProjectModel)
-const memberService = new MemberService(MemberModel)
+const memberService = new MemberService(
+  MemberModel as unknown as MemberModelType
+)
 
 const projectController = new ProjectController(
   userService,

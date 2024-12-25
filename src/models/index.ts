@@ -2,5 +2,6 @@ import UserModel from './auth/user.models'
 
 import ProjectModel from './project/project.models'
 import MemberModel from './project/member.models'
+import { MemberModelType } from './project/member.models'
 
-export { UserModel, ProjectModel, MemberModel }
+export { UserModel, ProjectModel, MemberModel, MemberModelType }

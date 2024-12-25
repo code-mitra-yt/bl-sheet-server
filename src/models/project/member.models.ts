@@ -1,4 +1,5 @@
-import { Model, model, Schema } from 'mongoose'
+import { AggregatePaginateModel, model, Model, Schema } from 'mongoose'
+import mongooseAggregatePaginate from 'mongoose-aggregate-paginate-v2'
 
 import {
   AvailableMemberRoles,
@@ -43,6 +44,10 @@ const memberSchema = new Schema<CustomModel<Member>>(
 
   { timestamps: true }
 )
+
+memberSchema.plugin(mongooseAggregatePaginate)
+
+export type MemberModelType = Model<Member> & AggregatePaginateModel<Member>
 
 const MemberModel: Model<CustomModel<Member>> = model<CustomModel<Member>>(
   'Member',

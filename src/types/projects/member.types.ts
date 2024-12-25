@@ -20,3 +20,11 @@ export interface Member {
   role?: MemberRole
   invitationStatus?: InvitationStatus
 }
+
+export interface GetMemberQuery {
+  projectId: string
+  page: number
+  limit: number
+  email: string
+  invitationStatus: InvitationStatus
+}
