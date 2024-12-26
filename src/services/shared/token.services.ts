@@ -4,7 +4,7 @@ import { ENV } from '../../config'
 import { JwtPayloadType } from '../../types/shared/shared.types'
 
 class TokenService {
-  async signToken(payload: JwtPayloadType, exp: string | number = '30 days') {
+  async signToken(payload: any, exp: string | number = '30 days') {
     return jwt.sign(payload, ENV.ACCESS_TOKEN_SECRET!, {
       expiresIn: exp,
       algorithm: 'HS256',

@@ -14,7 +14,7 @@ export enum InvitationStatus {
 
 export interface Member {
   _id?: ObjectId
-  userId: ObjectId
+  userId?: ObjectId
   projectId: ObjectId
   email: string
   role?: MemberRole
@@ -27,4 +27,9 @@ export interface GetMemberQuery {
   limit: number
   email: string
   invitationStatus: InvitationStatus
+}
+
+export interface InviteMemberBody {
+  email: string
+  projectId: string
 }

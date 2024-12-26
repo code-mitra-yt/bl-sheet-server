@@ -1,4 +1,4 @@
-import { checkSchema } from 'express-validator'
+import { body, checkSchema } from 'express-validator'
 
 const getMembersQueryValidator = checkSchema(
   {
@@ -42,4 +42,20 @@ const getMembersQueryValidator = checkSchema(
   ['query']
 )
 
-export { getMembersQueryValidator }
+const inviteMemberValidator = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Email should be valid email'),
+
+  body('projectId')
+    .trim()
+    .notEmpty()
+    .withMessage('Project ID is required')
+    .isMongoId()
+    .withMessage('Project ID is Invalid'),
+]
+
+export { getMembersQueryValidator, inviteMemberValidator }

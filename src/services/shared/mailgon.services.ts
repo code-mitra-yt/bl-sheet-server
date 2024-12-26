@@ -64,6 +64,40 @@ class MailgenService {
 
     return { emailHTML, emailText }
   }
+
+  inviteMemberHTML({
+    name,
+    link,
+    projectName,
+    inviteSenderName,
+  }: {
+    name: string
+    link: string
+    projectName: string
+    inviteSenderName: string
+  }) {
+    var email = {
+      body: {
+        name,
+        intro: `Invitation from ${projectName}`,
+        action: {
+          instructions: `${inviteSenderName} with BL Sheet has invited you to use ${projectName} to collaborate with them. Use the button below to accept invitation and get started. The link below remain active for 7 days.`,
+          button: {
+            color: 'blue',
+            text: 'Accept Invitation',
+            link,
+          },
+        },
+        outro:
+          "If you have any questions, please don't hesitate to contact us.",
+      },
+    }
+
+    var emailHTML = this.mailGenerator.generate(email)
+    var emailText = this.mailGenerator.generatePlaintext(email)
+
+    return { emailHTML, emailText }
+  }
 }
 
 export default MailgenService

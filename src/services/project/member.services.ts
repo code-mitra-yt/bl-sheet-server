@@ -137,7 +137,7 @@ class MemberService {
           as: 'user',
         },
       },
-      { $unwind: '$user' },
+      { $unwind: { path: '$user', preserveNullAndEmptyArrays: true } },
       {
         $project: {
           _id: 1,
@@ -145,20 +145,6 @@ class MemberService {
           user: { fullName: 1, avatar: 1 },
           invitationStatus: 1,
           role: 1,
-        },
-      },
-      // {
-      //   $facet: {
-      //     metadata: [{ $count: 'totalCount' }],
-      //     members: [{ $skip: (page - 1) * limit }, { $limit: limit }],
-      //   },
-      // },
-      // {
-      //   $unwind: '$metadata',
-      // },
-      {
-        $addFields: {
-          totalCount: '$metadata.totalCount',
         },
       },
     ]
@@ -176,10 +162,20 @@ class MemberService {
     )
 
     return members
+  }
 
-    const result = await this.memberModel.aggregate(pipeline).exec()
-    if (result.length) return result[0]
-    return { metadata: { totalCount: 0 }, members: [] }
+  async getProjectMemberCount(projectId: string) {
+    const pipeline: PipelineStage[] = [
+      { $match: { projectId: new mongoose.Types.ObjectId(projectId) } },
+      { $count: 'count' },
+    ]
+    const res = await this.memberModel.aggregate(pipeline).exec()
+    if (res.length > 0) return res[0].count
+    return 0
+  }
+
+  async getMemberByEmailAndProjectId(email: string, projectId: string) {
+    return this.memberModel.findOne({ email, projectId })
   }
 }
 

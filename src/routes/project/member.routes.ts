@@ -1,19 +1,47 @@
 import express from 'express'
 
 import { logger } from '../../logger'
-import { MemberModel, MemberModelType } from '../../models'
 import { asyncHandler } from '../../utils'
-import { MemberService } from '../../services'
 import { MemberController } from '../../controllers'
 import { verifyJWT, validate } from '../../middlewares'
-import { getMembersQueryValidator } from '../../validators/project/member.validators'
+import {
+  MailgenService,
+  MemberService,
+  NotificationService,
+  ProjectService,
+  TokenService,
+  UserService,
+} from '../../services'
+import {
+  MemberModel,
+  MemberModelType,
+  ProjectModel,
+  UserModel,
+} from '../../models'
+import {
+  getMembersQueryValidator,
+  inviteMemberValidator,
+} from '../../validators/project/member.validators'
 
 const memberRoutes = express.Router()
 
 const memberService = new MemberService(
   MemberModel as unknown as MemberModelType
 )
-const memberController = new MemberController(memberService, logger)
+const userService = new UserService(UserModel)
+const projectService = new ProjectService(ProjectModel)
+const tokenService = new TokenService()
+const notificationService = new NotificationService()
+const mailgenService = new MailgenService()
+const memberController = new MemberController(
+  userService,
+  memberService,
+  projectService,
+  tokenService,
+  notificationService,
+  mailgenService,
+  logger
+)
 
 memberRoutes.get(
   '/getMembers',
@@ -21,6 +49,14 @@ memberRoutes.get(
   getMembersQueryValidator,
   validate,
   asyncHandler((req, res) => memberController.getMembers(req, res))
+)
+
+memberRoutes.post(
+  '/inviteMember',
+  verifyJWT,
+  inviteMemberValidator,
+  validate,
+  asyncHandler((req, res) => memberController.inviteMember(req, res))
 )
 
 export default memberRoutes
