@@ -1,7 +1,7 @@
 import { Response } from 'express'
 import { Logger } from 'winston'
 
-import { ApiError } from '../../utils'
+import { ApiError, ApiResponse } from '../../utils'
 import { MSG } from '../../constants'
 import { MemberService } from '../../services'
 import { CustomRequest } from '../../types/shared/shared.types'
@@ -41,7 +41,9 @@ class MemberController {
       query
     )
 
-    res.status(200).json(members)
+    return res
+      .status(200)
+      .json(new ApiResponse(200, members, 'Members fetched successfully'))
   }
 }
 

@@ -15,7 +15,7 @@ const getMembersQueryValidator = checkSchema(
       trim: true,
       customSanitizer: {
         options: (value: unknown) => {
-          if (value === 'all') return ''
+          if (value === 'All') return ''
           return value ? value : ''
         },
       },
