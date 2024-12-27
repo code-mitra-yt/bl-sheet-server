@@ -39,3 +39,8 @@ export interface ChangeInvitationStatusBody {
   invitationStatus: InvitationStatus
   invitationToken: string
 }
+
+export interface RemoveMemberBody {
+  projectId: string
+  memberId: string
+}

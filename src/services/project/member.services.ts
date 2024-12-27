@@ -187,6 +187,10 @@ class MemberService {
       new: true,
     })
   }
+
+  async removeMember(memberId: string) {
+    return this.memberModel.findByIdAndDelete(memberId)
+  }
 }
 
 export default MemberService

@@ -17,6 +17,8 @@ import {
   GetMemberQuery,
   InviteMemberBody,
   ChangeInvitationStatusBody,
+  RemoveMemberBody,
+  MemberRole,
 } from '../../types/projects/member.types'
 import { ObjectId } from 'mongoose'
 import { ENV } from '../../config'
@@ -192,6 +194,44 @@ class MemberController {
           'Update invitation status successfully'
         )
       )
+  }
+
+  async removeMember(req: CustomRequest<RemoveMemberBody>, res: Response) {
+    const userId = req.user?._id as string
+    const { memberId, projectId } = req.body
+
+    this.logger.info({
+      msg: MSG.MEMBER.REMOVE_MEMBER,
+      data: { userId, memberId },
+    })
+
+    const member = await this.memberService.getMemberById(memberId)
+    if (!member) throw new ApiError(404, 'Member not found')
+
+    if (member.role === MemberRole.OWNER) {
+      throw new ApiError(403, 'You can not remove the owner of the project')
+    }
+
+    const owner = await this.memberService.getMemberByUserIdAndProjectId(
+      userId,
+      projectId
+    )
+    if (!owner)
+      throw new ApiError(
+        403,
+        'You have no permission to remove member the project'
+      )
+    if (owner.role !== MemberRole.OWNER)
+      throw new ApiError(
+        403,
+        'Only the owner can remove a member from the project'
+      )
+
+    await this.memberService.removeMember(memberId)
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { memberId }, 'Member removed successfully'))
   }
 }
 

@@ -80,8 +80,25 @@ const changeInvitationStatusValidator = [
     .withMessage('Invitation token is required'),
 ]
 
+const removeMemberValidator = [
+  body('projectId')
+    .trim()
+    .notEmpty()
+    .withMessage('Project ID is required')
+    .isMongoId()
+    .withMessage('Project ID is Invalid'),
+
+  body('memberId')
+    .trim()
+    .notEmpty()
+    .withMessage('Member ID is required')
+    .isMongoId()
+    .withMessage('Member ID is Invalid'),
+]
+
 export {
   getMembersQueryValidator,
   inviteMemberValidator,
   changeInvitationStatusValidator,
+  removeMemberValidator,
 }
