@@ -16,6 +16,7 @@ import {
   InvitationStatus,
   GetMemberQuery,
   InviteMemberBody,
+  ChangeInvitationStatusBody,
 } from '../../types/projects/member.types'
 import { ObjectId } from 'mongoose'
 import { ENV } from '../../config'
@@ -140,6 +141,55 @@ class MemberController {
           200,
           { memberId: member._id },
           'Member invited successfully'
+        )
+      )
+  }
+
+  async changeInvitationStatus(
+    req: CustomRequest<ChangeInvitationStatusBody>,
+    res: Response
+  ) {
+    const userId = req.user?._id
+    const userEmail = req?.user?.email
+    const { invitationStatus, invitationToken } = req.body
+
+    const decodeMember = this.tokenService.verifyToken(invitationToken) as any
+    if (!decodeMember) throw new ApiError(400, 'Invitation token is invalid')
+    if ((decodeMember?.exp || 0) * 1000 <= Date.now())
+      throw new ApiError(400, 'Invitation token is expired')
+
+    if (decodeMember.user.email !== userEmail) {
+      throw new ApiError(
+        400,
+        `You are not allowed ${invitationStatus} invitation`
+      )
+    }
+
+    const member = await this.memberService.getMemberById(
+      decodeMember.user?.memberId
+    )
+    if (!member) throw new ApiError(404, 'Member not found')
+    if (member.invitationStatus === InvitationStatus.ACCEPTED) {
+      throw new ApiError(
+        400,
+        'This user has already accepted the project invitation'
+      )
+    }
+
+    await this.memberService.updateMember(member._id as unknown as string, {
+      invitationStatus,
+      email: decodeMember.user.email,
+      projectId: member.projectId as unknown as ObjectId,
+      userId: userId as unknown as ObjectId,
+    })
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { memberId: member._id, email: member.email, invitationStatus },
+          'Update invitation status successfully'
         )
       )
   }

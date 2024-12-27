@@ -177,6 +177,16 @@ class MemberService {
   async getMemberByEmailAndProjectId(email: string, projectId: string) {
     return this.memberModel.findOne({ email, projectId })
   }
+
+  async getMemberById(memberId: string) {
+    return this.memberModel.findById(memberId)
+  }
+
+  async updateMember(memberId: string, member: Partial<Member>) {
+    return this.memberModel.findByIdAndUpdate(memberId, member, {
+      new: true,
+    })
+  }
 }
 
 export default MemberService

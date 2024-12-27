@@ -79,9 +79,9 @@ class MailgenService {
     var email = {
       body: {
         name,
-        intro: `Invitation from ${projectName}`,
+        intro: `Invitation to Collaborate on ${projectName}`,
         action: {
-          instructions: `${inviteSenderName} with BL Sheet has invited you to use ${projectName} to collaborate with them. Use the button below to accept invitation and get started. The link below remain active for 7 days.`,
+          instructions: `${inviteSenderName} from BL Sheet has invited you to join ${projectName} and collaborate seamlessly on this exciting project. Click the button below to accept the invitation and get started right away:`,
           button: {
             color: 'blue',
             text: 'Accept Invitation',
@@ -89,7 +89,7 @@ class MailgenService {
           },
         },
         outro:
-          "If you have any questions, please don't hesitate to contact us.",
+          'Please note that this link will remain active for the next 7 days',
       },
     }
 

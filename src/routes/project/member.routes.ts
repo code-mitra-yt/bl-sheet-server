@@ -19,6 +19,7 @@ import {
   UserModel,
 } from '../../models'
 import {
+  changeInvitationStatusValidator,
   getMembersQueryValidator,
   inviteMemberValidator,
 } from '../../validators/project/member.validators'
@@ -57,6 +58,14 @@ memberRoutes.post(
   inviteMemberValidator,
   validate,
   asyncHandler((req, res) => memberController.inviteMember(req, res))
+)
+
+memberRoutes.patch(
+  '/changeInvitationStatus',
+  verifyJWT,
+  changeInvitationStatusValidator,
+  validate,
+  asyncHandler((req, res) => memberController.changeInvitationStatus(req, res))
 )
 
 export default memberRoutes

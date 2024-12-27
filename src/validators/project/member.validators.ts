@@ -1,4 +1,5 @@
 import { body, checkSchema } from 'express-validator'
+import { AvailableInvitationStatus } from '../../constants'
 
 const getMembersQueryValidator = checkSchema(
   {
@@ -58,4 +59,29 @@ const inviteMemberValidator = [
     .withMessage('Project ID is Invalid'),
 ]
 
-export { getMembersQueryValidator, inviteMemberValidator }
+const changeInvitationStatusValidator = [
+  body('email')
+    .trim()
+    .notEmpty()
+    .withMessage('Email is required')
+    .isEmail()
+    .withMessage('Email should be valid email'),
+
+  body('invitationStatus')
+    .trim()
+    .notEmpty()
+    .withMessage('Invitation status required')
+    .isIn(AvailableInvitationStatus)
+    .withMessage('Invalid invitation status'),
+
+  body('invitationToken')
+    .trim()
+    .notEmpty()
+    .withMessage('Invitation token is required'),
+]
+
+export {
+  getMembersQueryValidator,
+  inviteMemberValidator,
+  changeInvitationStatusValidator,
+}

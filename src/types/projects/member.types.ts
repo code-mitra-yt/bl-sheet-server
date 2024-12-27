@@ -33,3 +33,9 @@ export interface InviteMemberBody {
   email: string
   projectId: string
 }
+
+export interface ChangeInvitationStatusBody {
+  email: string
+  invitationStatus: InvitationStatus
+  invitationToken: string
+}
