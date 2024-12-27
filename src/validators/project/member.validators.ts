@@ -1,5 +1,8 @@
 import { body, checkSchema } from 'express-validator'
-import { AvailableInvitationStatus } from '../../constants'
+import {
+  AvailableInvitationStatus,
+  AvailableMemberRoles,
+} from '../../constants'
 
 const getMembersQueryValidator = checkSchema(
   {
@@ -96,9 +99,20 @@ const removeMemberValidator = [
     .withMessage('Member ID is Invalid'),
 ]
 
+const updateMemberValidator = [
+  ...removeMemberValidator,
+  body('role')
+    .trim()
+    .notEmpty()
+    .withMessage('Role is required')
+    .isIn(AvailableMemberRoles)
+    .withMessage('Role is invalid'),
+]
+
 export {
   getMembersQueryValidator,
   inviteMemberValidator,
   changeInvitationStatusValidator,
   removeMemberValidator,
+  updateMemberValidator,
 }

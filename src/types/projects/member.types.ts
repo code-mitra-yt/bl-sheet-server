@@ -44,3 +44,5 @@ export interface RemoveMemberBody {
   projectId: string
   memberId: string
 }
+
+export type UpdateMemberBody = RemoveMemberBody & { role: MemberRole }

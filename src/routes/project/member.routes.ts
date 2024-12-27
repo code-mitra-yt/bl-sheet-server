@@ -23,6 +23,7 @@ import {
   getMembersQueryValidator,
   inviteMemberValidator,
   removeMemberValidator,
+  updateMemberValidator,
 } from '../../validators/project/member.validators'
 
 const memberRoutes = express.Router()
@@ -75,6 +76,14 @@ memberRoutes.delete(
   removeMemberValidator,
   validate,
   asyncHandler((req, res) => memberController.removeMember(req, res))
+)
+
+memberRoutes.patch(
+  '/updateMember',
+  verifyJWT,
+  updateMemberValidator,
+  validate,
+  asyncHandler((req, res) => memberController.updateMember(req, res))
 )
 
 export default memberRoutes
