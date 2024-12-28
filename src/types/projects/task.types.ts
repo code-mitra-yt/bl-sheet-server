@@ -33,3 +33,13 @@ export interface Task {
   taskNumber: number
   isDeleted: boolean
 }
+
+export interface GetTasksQuery {
+  projectId: string
+  title: string
+  priority: TaskPriority
+  status: TaskStatus
+  assignedToMe: boolean
+  createdByMe: boolean
+  sortByCreated: boolean
+}
