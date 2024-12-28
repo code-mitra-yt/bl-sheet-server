@@ -25,20 +25,13 @@ export const taskValidator = [
     .isIn(AvailableTaskStatus)
     .withMessage('Status is invalid'),
   body('taskType').trim().notEmpty().withMessage('Task type is required'),
-  body('startDate')
+  body('dueDate')
     .trim()
     .notEmpty()
-    .withMessage('Start date is required')
+    .withMessage('Due date is required')
     .isISO8601()
     .toDate()
-    .withMessage('Start date is invalid'),
-  body('endDate')
-    .trim()
-    .notEmpty()
-    .withMessage('End date is required')
-    .isISO8601()
-    .toDate()
-    .withMessage('End date is invalid'),
+    .withMessage('Due date is invalid'),
   ...projectIdValidator,
 ]
 

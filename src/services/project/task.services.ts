@@ -55,6 +55,7 @@ class TaskService {
       {
         $match: {
           projectId: new mongoose.Types.ObjectId(projectId),
+          isDeleted: false,
           ...(createdByMe && {
             memberId: new mongoose.Types.ObjectId(memberId),
           }),
@@ -116,8 +117,7 @@ class TaskService {
           description: 1,
           status: 1,
           priority: 1,
-          startDate: 1,
-          endDate: 1,
+          dueDate: 1,
           tags: 1,
           completedDate: 1,
           subTasks: 1,

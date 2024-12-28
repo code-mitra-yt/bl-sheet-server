@@ -39,12 +39,7 @@ const taskSchema = new Schema<CustomModel<Task>>(
       default: TaskPriority.LOW,
     },
 
-    startDate: {
-      type: Date,
-      required: true,
-    },
-
-    endDate: {
+    dueDate: {
       type: Date,
       required: true,
     },
