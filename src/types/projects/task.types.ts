@@ -22,7 +22,6 @@ export interface Task {
   status: TaskStatus
   priority: TaskPriority
   dueDate: Date
-  tags: string[]
   assignees: ObjectId[]
   completedDate: Date
   attachments: ObjectId[]

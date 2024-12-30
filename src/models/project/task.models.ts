@@ -44,11 +44,6 @@ const taskSchema = new Schema<CustomModel<Task>>(
       required: true,
     },
 
-    tags: {
-      type: [String],
-      default: [],
-    },
-
     assignees: {
       type: [Schema.Types.ObjectId],
       ref: 'Member',

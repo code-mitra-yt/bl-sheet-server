@@ -5,6 +5,7 @@ import { TaskController } from '../../controllers'
 import { validate, verifyJWT } from '../../middlewares'
 import {
   assignMemberValidator,
+  getTaskQueryValidator,
   getTasksValidator,
   taskValidator,
   updateTaskValidator,
@@ -91,6 +92,14 @@ taskRoutes.post(
   assignMemberValidator,
   validate,
   asyncHandler((req, res) => taskController.removeAssignedMember(req, res))
+)
+
+taskRoutes.get(
+  '/getTask',
+  verifyJWT,
+  getTaskQueryValidator,
+  validate,
+  asyncHandler((req, res) => taskController.getTask(req, res))
 )
 
 export default taskRoutes

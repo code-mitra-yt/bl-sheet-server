@@ -5,6 +5,83 @@ import { GetTasksQuery, Task } from '../../types/projects/task.types'
 class TaskService {
   constructor(private taskModel: TaskModelType) {}
 
+  async getTask(taskId: string, memberId: string) {
+    const pipeline: PipelineStage[] = [
+      {
+        $match: {
+          _id: new mongoose.Types.ObjectId(taskId),
+          isDeleted: false,
+        },
+      },
+      {
+        $lookup: {
+          from: 'members',
+          localField: 'memberId',
+          foreignField: '_id',
+          as: 'member',
+        },
+      },
+      { $unwind: '$member' },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'member.userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: '$user' },
+      {
+        $lookup: {
+          from: 'members',
+          localField: 'assignees',
+          foreignField: '_id',
+          as: 'membersDetails',
+        },
+      },
+      {
+        $addFields: {
+          members: {
+            $map: {
+              input: '$membersDetails',
+              as: 'member',
+              in: {
+                _id: '$$member._id',
+                email: '$$member.email',
+              },
+            },
+          },
+          isCreator: {
+            $eq: ['$memberId', new mongoose.Types.ObjectId(memberId)],
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          description: 1,
+          status: 1,
+          priority: 1,
+          dueDate: 1,
+          comments: 1,
+          isCreator: 1,
+          members: 1,
+          creator: {
+            fullName: '$user.fullName',
+            email: '$member.email',
+            role: '$member.role',
+            avatar: '$user.avatar',
+          },
+        },
+      },
+    ]
+
+    const result = await this.taskModel.aggregate(pipeline).exec()
+    if (result.length > 0) return result[0]
+    return null
+  }
+
   async createTask(task: Task) {
     return this.taskModel.create(task)
   }

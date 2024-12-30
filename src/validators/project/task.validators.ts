@@ -133,4 +133,25 @@ export const assignMemberValidator = [
     .withMessage('Invalid member ID'),
 ]
 
+export const getTaskQueryValidator = [
+  query('taskId')
+    .trim()
+    .notEmpty()
+    .withMessage('Task ID required')
+    .isMongoId()
+    .withMessage('Invalid task ID'),
+  query('projectId')
+    .trim()
+    .notEmpty()
+    .withMessage('Project ID required')
+    .isMongoId()
+    .withMessage('Invalid project ID'),
+  query('memberId')
+    .trim()
+    .notEmpty()
+    .withMessage('Member ID required')
+    .isMongoId()
+    .withMessage('Invalid member ID'),
+]
+
 export const updateTaskValidator = [...taskValidator, ...validateTaskId]

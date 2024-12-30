@@ -24,6 +24,28 @@ class TaskController {
     private logger: Logger
   ) {}
 
+  async getTask(req: CustomRequest, res: Response) {
+    const { taskId, memberId, projectId } = req.query
+
+    const project = await this.projectService.getProjectById(
+      projectId as string
+    )
+    if (!project) throw new ApiError(404, 'Project not found')
+
+    const member = await this.memberService.getMemberById(memberId as string)
+    if (!member) throw new ApiError(404, 'Member not found')
+
+    const task = await this.taskService.getTask(
+      taskId as string,
+      memberId as string
+    )
+    if (!task) throw new ApiError(404, 'Task not found')
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, { task }, 'Task fetched successfully'))
+  }
+
   async getTasks(req: CustomRequest, res: Response) {
     const userId = req.user?._id as string
     const projectId = req.query.projectId as string
