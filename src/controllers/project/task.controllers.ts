@@ -25,19 +25,23 @@ class TaskController {
   ) {}
 
   async getTask(req: CustomRequest, res: Response) {
-    const { taskId, memberId, projectId } = req.query
+    const userId = req.user?._id as string
+    const { taskId, projectId } = req.query
+
+    const member = await this.memberService.getMemberByUserIdAndProjectId(
+      userId,
+      projectId as string
+    )
+    if (!member) throw new ApiError(404, 'Member not found')
 
     const project = await this.projectService.getProjectById(
       projectId as string
     )
     if (!project) throw new ApiError(404, 'Project not found')
 
-    const member = await this.memberService.getMemberById(memberId as string)
-    if (!member) throw new ApiError(404, 'Member not found')
-
     const task = await this.taskService.getTask(
       taskId as string,
-      memberId as string
+      member._id as unknown as string
     )
     if (!task) throw new ApiError(404, 'Task not found')
 

@@ -146,12 +146,6 @@ export const getTaskQueryValidator = [
     .withMessage('Project ID required')
     .isMongoId()
     .withMessage('Invalid project ID'),
-  query('memberId')
-    .trim()
-    .notEmpty()
-    .withMessage('Member ID required')
-    .isMongoId()
-    .withMessage('Invalid member ID'),
 ]
 
 export const updateTaskValidator = [...taskValidator, ...validateTaskId]

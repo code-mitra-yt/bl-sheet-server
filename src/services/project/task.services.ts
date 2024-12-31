@@ -67,6 +67,8 @@ class TaskService {
           comments: 1,
           isCreator: 1,
           members: 1,
+          taskNumber: 1,
+          taskType: 1,
           creator: {
             fullName: '$user.fullName',
             email: '$member.email',
