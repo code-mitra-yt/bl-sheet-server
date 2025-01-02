@@ -11,6 +11,7 @@ import IssueService from './project/issue.services'
 import MemberService from './project/member.services'
 import BudgetService from './project/budget.services'
 import DocService from './project/doc.services'
+import CommentService from './project/comment.services'
 
 export {
   UserService,
@@ -24,4 +25,5 @@ export {
   MemberService,
   BudgetService,
   DocService,
+  CommentService,
 }

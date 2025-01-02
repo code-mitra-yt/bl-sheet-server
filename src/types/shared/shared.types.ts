@@ -1,6 +1,7 @@
 import { Request } from 'express'
 import { JwtPayload } from 'jsonwebtoken'
 import { User } from '../auth/user.types'
+import { ObjectId } from 'mongoose'
 
 export interface CustomRequest<T = null> extends Request {
   body: T
@@ -19,4 +20,12 @@ export interface NotificationMessage {
   html?: string
   subject?: string
   from?: string
+}
+
+export interface Comment {
+  content: string
+  memberId: ObjectId
+  likes?: number
+  replies?: ObjectId[]
+  commentType: string
 }

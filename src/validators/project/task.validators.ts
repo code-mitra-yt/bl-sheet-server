@@ -148,4 +148,20 @@ export const getTaskQueryValidator = [
     .withMessage('Invalid project ID'),
 ]
 
+export const addCommentValidator = [
+  ...validateTaskId,
+  body('content').trim().notEmpty().withMessage('Content is  required'),
+]
+
+export const validateCommentId = [
+  body('commentId')
+    .trim()
+    .notEmpty()
+    .withMessage('Comment ID is required')
+    .isMongoId()
+    .withMessage('Invalid comment ID'),
+]
+
+export const removeCommentValidator = [...validateTaskId, ...validateCommentId]
+
 export const updateTaskValidator = [...taskValidator, ...validateTaskId]

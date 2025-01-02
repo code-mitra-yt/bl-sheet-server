@@ -4,15 +4,19 @@ import { asyncHandler } from '../../utils'
 import { TaskController } from '../../controllers'
 import { validate, verifyJWT } from '../../middlewares'
 import {
+  addCommentValidator,
   assignMemberValidator,
   getTaskQueryValidator,
   getTasksValidator,
+  removeCommentValidator,
   taskValidator,
   updateTaskValidator,
+  validateCommentId,
   validateProjectIdQuery,
   validateTaskId,
 } from '../../validators/project/task.validators'
 import {
+  CommentService,
   MailgenService,
   MemberService,
   NotificationService,
@@ -20,6 +24,7 @@ import {
   TaskService,
 } from '../../services'
 import {
+  CommentModel,
   MemberModel,
   MemberModelType,
   ProjectModel,
@@ -36,10 +41,12 @@ const memberService = new MemberService(
 const notificationService = new NotificationService()
 const mailgenService = new MailgenService()
 const projectService = new ProjectService(ProjectModel)
+const commentService = new CommentService(CommentModel)
 const taskController = new TaskController(
   projectService,
   taskService,
   memberService,
+  commentService,
   notificationService,
   mailgenService,
   logger
@@ -102,4 +109,28 @@ taskRoutes.get(
   asyncHandler((req, res) => taskController.getTask(req, res))
 )
 
+taskRoutes.post(
+  '/addComment',
+  verifyJWT,
+  addCommentValidator,
+  validate,
+  asyncHandler((req, res) => taskController.addComment(req, res))
+)
+
+taskRoutes.delete(
+  '/removeComment',
+  verifyJWT,
+  removeCommentValidator,
+  validate,
+  asyncHandler((req, res) => taskController.removeComment(req, res))
+)
+
+taskRoutes.patch(
+  '/updateComment',
+  verifyJWT,
+  addCommentValidator,
+  validateCommentId,
+  validate,
+  asyncHandler((req, res) => taskController.updateComment(req, res))
+)
 export default taskRoutes

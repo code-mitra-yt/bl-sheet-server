@@ -3,9 +3,10 @@ import { Logger } from 'winston'
 
 import { MSG } from '../../constants'
 import { ApiError, ApiResponse } from '../../utils'
-import { CustomRequest } from '../../types/shared/shared.types'
+import { Comment, CustomRequest } from '../../types/shared/shared.types'
 import { GetTasksQuery, Task } from '../../types/projects/task.types'
 import {
+  CommentService,
   MailgenService,
   MemberService,
   NotificationService,
@@ -19,6 +20,7 @@ class TaskController {
     private projectService: ProjectService,
     private taskService: TaskService,
     private memberService: MemberService,
+    private commentService: CommentService,
     private notificationService: NotificationService,
     private mailgenService: MailgenService,
     private logger: Logger
@@ -270,6 +272,131 @@ class TaskController {
           'Assigned member removed successfully'
         )
       )
+  }
+
+  async addComment(
+    req: CustomRequest<Comment & { taskId: string }>,
+    res: Response
+  ) {
+    const userId = req.user?._id as string
+    const { taskId, content } = req.body
+
+    this.logger.info({
+      msg: MSG.TASK.CREATE_COMMENT,
+      data: { userId, taskId },
+    })
+
+    const task = await this.taskService.getTaskById(taskId)
+    if (!task) throw new ApiError(404, 'Task not found')
+
+    const member = await this.memberService.getMemberByUserIdAndProjectId(
+      userId,
+      task.projectId as unknown as string
+    )
+    if (!member) throw new ApiError(404, 'Member not found')
+
+    const createdComment = await this.commentService.createComment({
+      content,
+      memberId: member._id,
+    })
+
+    await this.taskService.addComment(
+      task._id as unknown as string,
+      createdComment._id as unknown as string
+    )
+
+    return res
+      .status(201)
+      .json(
+        new ApiResponse(
+          201,
+          { commentId: createdComment._id },
+          'Comment added successfully'
+        )
+      )
+  }
+
+  async removeComment(
+    req: CustomRequest<{ taskId: string; commentId: string }>,
+    res: Response
+  ) {
+    const userId = req.user?._id as string
+    const { taskId, commentId } = req.body
+
+    this.logger.info({
+      msg: MSG.TASK.CREATE_COMMENT,
+      data: { userId, taskId },
+    })
+
+    const task = await this.taskService.getTaskById(taskId)
+    if (!task) throw new ApiError(404, 'Task not found')
+
+    const member = await this.memberService.getMemberByUserIdAndProjectId(
+      userId,
+      task.projectId as unknown as string
+    )
+    if (!member) throw new ApiError(404, 'Member not found')
+
+    const comment = await this.commentService.getCommentById(commentId)
+    if (!comment) throw new ApiError(404, 'Comment not found')
+
+    if (
+      member.role === MemberRole.MEMBER &&
+      member._id.toString() !== comment.memberId.toString()
+    )
+      throw new ApiError(403, 'You have no permissions to remove this comment')
+
+    await this.taskService.removeComment(
+      task._id as unknown as string,
+      comment._id as unknown as string
+    )
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          { commentId: comment._id },
+          'Comment removed successfully'
+        )
+      )
+  }
+
+  async updateComment(
+    req: CustomRequest<Comment & { commentId: string; taskId: string }>,
+    res: Response
+  ) {
+    const userId = req.user?._id as string
+    const { taskId, content, commentId } = req.body
+
+    this.logger.info({
+      msg: MSG.TASK.CREATE_COMMENT,
+      data: { userId, taskId },
+    })
+
+    const task = await this.taskService.getTaskById(taskId)
+    if (!task) throw new ApiError(404, 'Task not found')
+
+    const member = await this.memberService.getMemberByUserIdAndProjectId(
+      userId,
+      task.projectId as unknown as string
+    )
+    if (!member) throw new ApiError(404, 'Member not found')
+
+    const comment = await this.commentService.getCommentById(commentId)
+    if (!comment) throw new ApiError(404, 'Comment not found')
+
+    if (
+      member._id.toString() !== comment.memberId.toString() ||
+      member.role === MemberRole.MEMBER
+    )
+      throw new ApiError(403, 'You do not have permission to update comment')
+
+    await this.commentService.updateComment({ content }, commentId)
+
+    return res
+      .status(201)
+      .json(new ApiResponse(201, { commentId }, 'Comment added successfully'))
   }
 }
 

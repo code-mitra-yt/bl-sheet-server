@@ -64,6 +64,7 @@ const taskSchema = new Schema<CustomModel<Task>>(
     comments: {
       type: [Schema.Types.ObjectId],
       ref: 'Comment',
+      default: [],
     },
 
     subTasks: {
